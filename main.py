@@ -11,6 +11,7 @@ import re
 import time
 import cv2
 from TextReader import TextReader
+from Camera import Camera
 
 
 ap = argparse.ArgumentParser()
@@ -26,22 +27,26 @@ ap.add_argument("-pof", "--portflask", type=str,
                 help="Puerto de la cámara", required=True)
 ap.add_argument("-f", "--frame-count", type=int, default=32,
                 help="# de frames para construir el modelo")
-ap.add_argument("-fa", "--facerecognition", type=bool, default=False,
-                help="face recognition")
+ap.add_argument("-fa", "--facerecognition", type=str, default="0",
+                help="face recognition", required=True)
 
 args = vars(ap.parse_args())
 
-url = "rtsp://"+args['user']+":"+args['password']+"@" + \
-    args['ip']+":"+args['port']+"/Streaming/Channels/101"
-print(url)
-vs = VideoStream(src=url).start()
-time.sleep(2.0)
+# url = "rtsp://"+args['user']+":"+args['password']+"@" + \
+#     args['ip']+":"+args['port']+"/Streaming/Channels/101"
+# print(url)
+
+camera = Camera(
+    user=args['user'],
+    password=args['password'],
+    ip=args['ip'],
+    port=args['port']
+)
 
 outputFrame = None
 lock = threading.Lock()
 app = Flask(__name__)
 
-detector_qr = cv2.QRCodeDetector()
 
 cedula = ""
 nombres = ""
@@ -53,11 +58,12 @@ def get_video():
 
     while True:
         # time.sleep(0.1)
-        frame = vs.read()
+        image = camera.getSnapshot()
+        # print(image)
+        frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
         if frame is not None:
-
             # frame = imutils.resize(frame, width=800)
-            if args['facerecognition'] == False:
+            if args['facerecognition'] == "0":
                 text_reader = TextReader(frame)
                 string_frame = text_reader.getString()
 
@@ -118,6 +124,3 @@ if __name__ == '__main__':
     t.start()
     app.run(host="0.0.0.0", port=int(
         args["portflask"]), debug=True, threaded=True, use_reloader=False)
-
-
-vs.stop()
