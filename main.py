@@ -10,6 +10,7 @@ import imutils
 import re
 import time
 import cv2
+from TextReader import TextReader
 
 
 ap = argparse.ArgumentParser()
