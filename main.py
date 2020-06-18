@@ -26,6 +26,9 @@ ap.add_argument("-pof", "--portflask", type=str,
                 help="Puerto de la cámara", required=True)
 ap.add_argument("-f", "--frame-count", type=int, default=32,
                 help="# de frames para construir el modelo")
+ap.add_argument("-fa", "--facerecognition", type=bool, default=False,
+                help="face recognition")
+
 args = vars(ap.parse_args())
 
 url = "rtsp://"+args['user']+":"+args['password']+"@" + \
@@ -54,39 +57,38 @@ def get_video():
         if frame is not None:
 
             # frame = imutils.resize(frame, width=800)
-            data, bbox, stight_code = detector_qr.detectAndDecode(frame)
-            print(data)
-            text_reader = TextReader(frame)
-            string_frame = text_reader.getString()
+            if args['facerecognition'] == False:
+                text_reader = TextReader(frame)
+                string_frame = text_reader.getString()
 
-            for row in string_frame.splitlines():
-                for col in row.split(" "):
-                    pattern = r'[0-9]{9}[\-][0-9]{1}'
-                    re_search = re.search(pattern, col)
-                    if re_search:
-                        position = re_search.span()
-                        cedula = col[position[0]:position[1]]
-                        cedula = cedula.replace("-", "")
+                for row in string_frame.splitlines():
+                    for col in row.split(" "):
+                        pattern = r'[0-9]{9}[\-][0-9]{1}'
+                        re_search = re.search(pattern, col)
+                        if re_search:
+                            position = re_search.span()
+                            cedula = col[position[0]:position[1]]
+                            cedula = cedula.replace("-", "")
 
-                    pattern = r'[0-9]{10}'
-                    re_search = re.search(pattern, col)
-                    # print(re_search)
-                    if re_search:
-                        position = re_search.span()
-                        cedula = col[position[0]:position[1]]
-            print(cedula)
-            # boxes = text_reader.getBoxes()
-            # n_boxes = len(boxes['level'])
-            # for i in range(n_boxes):
-            #     (x, y, w, h) = (boxes['left'][i], boxes['top']
-            #                     [i], boxes['width'][i], boxes['height'][i])
-            #     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        pattern = r'[0-9]{10}'
+                        re_search = re.search(pattern, col)
+                        # print(re_search)
+                        if re_search:
+                            position = re_search.span()
+                            cedula = col[position[0]:position[1]]
+                print(cedula)
+                # boxes = text_reader.getBoxes()
+                # n_boxes = len(boxes['level'])
+                # for i in range(n_boxes):
+                #     (x, y, w, h) = (boxes['left'][i], boxes['top']
+                #                     [i], boxes['width'][i], boxes['height'][i])
+                #     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray = cv2.GaussianBlur(gray, (7, 7), 0)
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
-            with lock:
-                outputFrame = frame.copy()
+                with lock:
+                    outputFrame = frame.copy()
 
 
 def generate():
