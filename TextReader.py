@@ -1,5 +1,11 @@
 import pytesseract
 from pytesseract import Output
+import platform
+
+if platform.system() == 'Linux':
+    pytesseract.pytesseract.tesseract_cmd = '/bin/tesseract'
+else:
+    pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 
 class TextReader:
@@ -9,7 +15,7 @@ class TextReader:
         self.__custom_config = r'--oem 3 --psm 6'
 
     def getString(self):
-        # pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+
         text = pytesseract.image_to_string(
             self.__frame, config=self.__custom_config)
         # print(text)
