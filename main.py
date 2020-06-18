@@ -16,18 +16,18 @@ from Camera import Camera
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-u", "--user", type=str,
-                help="Usuario de la cámara")
+                help="Usuario de la cámara", required=True)
 ap.add_argument("-p", "--password", type=str,
-                help="Contraseña de la cámmara")
+                help="Contraseña de la cámmara", required=True)
 ap.add_argument("-i", "--ip", type=str,
-                help="IP de la cámara")
-ap.add_argument("-r", "--port", type=str, default="80",
-                help="Puerto de la cámara")
+                help="IP de la cámara", required=True)
+ap.add_argument("-po", "--port", type=str, default="80",
+                help="Puerto de la cámara", required=True)
 ap.add_argument("-f", "--frame-count", type=int, default=32,
                 help="# de frames  para construit el modelo")
 args = vars(ap.parse_args())
 
-
+print(args['port'])
 camera = Camera(
     user=args['user'],
     password=args['password'],
