@@ -46,23 +46,26 @@ def detect_motion(frameCount):
     total = 0
 
     while True:
+        time.sleep(0.2)
         image = camera.getSnapshot()
-        frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (7, 7), 0)
+        print(image)
+        if image:
+            frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
-        if total > frameCount:
-            motion = md.detect(gray)
-            if motion is not None:
-                (thresh, (minX, minY, maxX, maxY)) = motion
-                cv2.rectangle(frame, (minX, minY), (maxX, maxY),
-                              (0, 0, 255), 2)
-                print("Motion")
+            if total > frameCount:
+                motion = md.detect(gray)
+                if motion is not None:
+                    (thresh, (minX, minY, maxX, maxY)) = motion
+                    cv2.rectangle(frame, (minX, minY), (maxX, maxY),
+                                  (0, 0, 255), 2)
+                    print("Motion")
 
-        md.update(gray)
-        total += 1
-        with lock:
-            outputFrame = frame.copy()
+            md.update(gray)
+            total += 1
+            with lock:
+                outputFrame = frame.copy()
 
 
 def generate():
@@ -92,4 +95,3 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
     app.run(host="0.0.0.0", threaded=True, use_reloader=False)
-vs.stop()
