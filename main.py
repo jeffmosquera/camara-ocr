@@ -90,11 +90,8 @@ def get_video():
                 #                     [i], boxes['width'][i], boxes['height'][i])
                 #     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (7, 7), 0)
-
-                with lock:
-                    outputFrame = frame.copy()
+            with lock:
+                outputFrame = frame.copy()
 
 
 def generate():
