@@ -1,6 +1,4 @@
 
-# import the necessary packages
-from SingleMotionDetector import SingleMotionDetector
 from imutils.video import VideoStream
 from flask import Response
 from flask import Flask
@@ -12,8 +10,6 @@ import imutils
 import re
 import time
 import cv2
-from Camera import Camera
-from TextReader import TextReader
 
 
 ap = argparse.ArgumentParser()
@@ -25,7 +21,7 @@ ap.add_argument("-i", "--ip", type=str,
                 help="IP de la cámara", required=True)
 ap.add_argument("-po", "--port", type=str, default="554",
                 help="Puerto de la cámara", required=True)
-ap.add_argument("-pof", "--port_flask", type=str,
+ap.add_argument("-pof", "--portflask", type=str,
                 help="Puerto de la cámara", required=True)
 ap.add_argument("-f", "--frame-count", type=int, default=32,
                 help="# de frames para construir el modelo")
@@ -47,7 +43,7 @@ cedula = ""
 nombres = ""
 
 
-def detect_motion(frameCount):
+def get_video():
     global vs, outputFrame, lock, cedula, nombres
     total = 0
 
@@ -114,11 +110,11 @@ def video_feed():
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
 
-    t = threading.Thread(target=detect_motion, args=(
-        args["frame_count"],))
+    t = threading.Thread(target=get_video)
     t.daemon = True
     t.start()
-    app.run(host="0.0.0.0", debug=True, threaded=True, use_reloader=False)
+    app.run(host="0.0.0.0", port=int(
+        args["portflask"]), debug=True, threaded=True, use_reloader=False)
 
 
 vs.stop()
