@@ -21,7 +21,7 @@ ap.add_argument("-p", "--password", type=str,
                 help="Contraseña de la cámmara")
 ap.add_argument("-i", "--ip", type=str,
                 help="IP de la cámara")
-ap.add_argument("-po", "--port", type=str, default="80",
+ap.add_argument("-r", "--port", type=str, default="80",
                 help="Puerto de la cámara")
 ap.add_argument("-f", "--frame-count", type=int, default=32,
                 help="# de frames  para construit el modelo")

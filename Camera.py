@@ -5,7 +5,7 @@ import numpy as np
 
 class Camera:
 
-    def __init__(self, user):
+    def __init__(self, user, password, ip, port):
         self.__user = user
         self.__password = password
         self.__ip = ip
