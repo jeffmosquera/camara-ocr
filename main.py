@@ -9,47 +9,82 @@ import threading
 import argparse
 import datetime
 import imutils
+import re
 import time
 import cv2
 from Camera import Camera
+from TextReader import TextReader
 
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-u", "--user", type=str,
                 help="Usuario de la cámara", required=True)
 ap.add_argument("-p", "--password", type=str,
-                help="Contraseña de la cámmara", required=True)
+                help="Contraseña de la cámara", required=True)
 ap.add_argument("-i", "--ip", type=str,
                 help="IP de la cámara", required=True)
-ap.add_argument("-po", "--port", type=str, default="80",
+ap.add_argument("-po", "--port", type=str, default="554",
+                help="Puerto de la cámara", required=True)
+ap.add_argument("-pof", "--port_flask", type=str,
                 help="Puerto de la cámara", required=True)
 ap.add_argument("-f", "--frame-count", type=int, default=32,
-                help="# de frames  para construit el modelo")
+                help="# de frames para construir el modelo")
 args = vars(ap.parse_args())
 
-print(args['port'])
-camera = Camera(
-    user=args['user'],
-    password=args['password'],
-    ip=args['ip'],
-    port=args['port']
-)
+url = "rtsp://"+args['user']+":"+args['password']+"@" + \
+    args['ip']+":"+args['port']+"/Streaming/Channels/101"
+print(url)
+vs = VideoStream(src=url).start()
+time.sleep(2.0)
 
 outputFrame = None
 lock = threading.Lock()
 app = Flask(__name__)
 
+detector_qr = cv2.QRCodeDetector()
+
+cedula = ""
+nombres = ""
+
 
 def detect_motion(frameCount):
-    global outputFrame, lock
+    global vs, outputFrame, lock, cedula, nombres
     total = 0
 
     while True:
         # time.sleep(0.1)
-        image = camera.getSnapshot()
-        print(image)
-        if image is not None:
-            frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        frame = vs.read()
+        if frame is not None:
+
+            # frame = imutils.resize(frame, width=800)
+            data, bbox, stight_code = detector_qr.detectAndDecode(frame)
+            print(data)
+            text_reader = TextReader(frame)
+            string_frame = text_reader.getString()
+
+            for row in string_frame.splitlines():
+                for col in row.split(" "):
+                    pattern = r'[0-9]{9}[\-][0-9]{1}'
+                    re_search = re.search(pattern, col)
+                    if re_search:
+                        position = re_search.span()
+                        cedula = col[position[0]:position[1]]
+                        cedula = cedula.replace("-", "")
+
+                    pattern = r'[0-9]{10}'
+                    re_search = re.search(pattern, col)
+                    # print(re_search)
+                    if re_search:
+                        position = re_search.span()
+                        cedula = col[position[0]:position[1]]
+            print(cedula)
+            # boxes = text_reader.getBoxes()
+            # n_boxes = len(boxes['level'])
+            # for i in range(n_boxes):
+            #     (x, y, w, h) = (boxes['left'][i], boxes['top']
+            #                     [i], boxes['width'][i], boxes['height'][i])
+            #     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
@@ -83,4 +118,7 @@ if __name__ == '__main__':
         args["frame_count"],))
     t.daemon = True
     t.start()
-    app.run(host="0.0.0.0", threaded=True, use_reloader=False)
+    app.run(host="0.0.0.0", debug=True, threaded=True, use_reloader=False)
+
+
+vs.stop()

@@ -1,6 +1,8 @@
 import requests
 import cv2
 import numpy as np
+import time
+from imutils.video import VideoStream
 
 
 class Camera:
@@ -10,17 +12,10 @@ class Camera:
         self.__password = password
         self.__ip = ip
         self.__port = port
-
-        self.__url = "http://"+self.__user+":"+self.__password+"@"+self.__ip + \
-            ":"+self.__port+"/Streaming/channels/1/picture"
-
-    def getSnapshot(self):
-        resp = requests.get(self.__url, stream=True)
-        print(resp)
+        self.__url = "rtsp://"+self.__user+":"+self.__password+"@"+self.__ip + \
+            ":"+self.__port+"/Streaming/Channels/101"
         print(self.__url)
-        status_code = resp.status_code
-        if status_code == 200:
-            resp_raw = resp.raw
-            image = np.asarray(bytearray(resp_raw.read()), dtype="uint8")
+        self.__vs = VideoStream(src=self.__url).start()
 
-            return image
+    def getFrame(self):
+        return self.__vs.read()
