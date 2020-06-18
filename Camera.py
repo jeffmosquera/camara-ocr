@@ -21,5 +21,6 @@ class Camera:
         if status_code == 200:
             resp_raw = resp.raw
             image = np.asarray(bytearray(resp_raw.read()), dtype="uint8")
+            print(image)
 
             return image
