@@ -35,7 +35,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": False
+        "face": True
     },
     {
         "index": 2,
@@ -57,7 +57,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": False
+        "face": True
     },
     {
         "index": 4,
@@ -79,7 +79,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": False
+        "face": True
     },
     {
         "index": 6,
@@ -90,7 +90,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": False
+        "face": True
     },
     {
         "index": 7,
@@ -101,7 +101,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": False
+        "face": True
     }
 
 ]
