@@ -24,7 +24,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": True
+        "face": False
     },
     {
         "index": 1,
@@ -46,7 +46,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": True
+        "face": False
     },
     {
         "index": 3,
@@ -68,7 +68,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": True
+        "face": False
     },
     {
         "index": 5,
@@ -90,7 +90,7 @@ cameras = [
         "camera": "",
         "outputFrame": "",
         "thread": "",
-        "face": True
+        "face": False
     },
     {
         "index": 7,
@@ -133,10 +133,14 @@ def get_video(camera):
     while True:
         image = camera["camera"].getSnapshot()
         frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        frame = imutils.resize(frame, width=800)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.threshold(
+            gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
         if frame is not None:
-            # frame = imutils.resize(frame, width=800)
+
             if camera["face"] == False:
-                text_reader = TextReader(frame)
+                text_reader = TextReader(gray)
                 string_frame = text_reader.getString()
 
                 cedula = ""
@@ -155,6 +159,7 @@ def get_video(camera):
                         if re_search:
                             position = re_search.span()
                             cedula = col[position[0]:position[1]]
+                # if camera['index'] == 6:
                 print(cedula)
                 # boxes = text_reader.getBoxes()
                 # n_boxes = len(boxes['level'])
