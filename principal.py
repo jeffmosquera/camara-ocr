@@ -1,4 +1,3 @@
-
 from imutils.video import VideoStream
 from flask import Response
 from flask import Flask, request
@@ -131,6 +130,7 @@ def get_video(camera):
     total = 0
 
     while True:
+        time.sleep(2)
         image = camera["camera"].getSnapshot()
         frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
         frame = imutils.resize(frame, width=800)

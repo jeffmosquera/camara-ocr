@@ -12,7 +12,7 @@ class Camera:
         self.__port = port
 
         self.__url = "http://"+self.__user+":"+self.__password+"@"+self.__ip + \
-            ":"+self.__port+"/Streaming/channels/1/picture"
+            ":"+self.__port+"/Streaming/channels/102/picture"
 
     def getSnapshot(self):
         resp = requests.get(self.__url, stream=True)
