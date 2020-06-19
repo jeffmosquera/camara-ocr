@@ -203,5 +203,5 @@ if __name__ == '__main__':
     # t = threading.Thread(target=get_video)
     # t.daemon = True
     # t.start()
-    app.run(port=5001, debug=True,
+    app.run(host="0.0.0.0", port=5001, debug=True,
             threaded=True, use_reloader=False)
